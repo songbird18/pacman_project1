@@ -72,6 +72,56 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def graphSearchByChels(problem: SearchProblem, structure):
+    """
+    IMPLEMENT MY (chelsea's) SEARCH METHOD HERE!
+    The "structure" var is used to represent the appropriate structure for
+    the search method used (Stack, Queue, etc)
+    """
+
+    #visited: track which nodes have been visited (is there a better structure?)
+    #start: initial state (first node)
+    visited = []
+    state = problem.getStartState()
+    #create the initial node from the starting state (no action taken, no cost)
+    structure.push([state, None, 0])
+
+    #loop until all states have been addressed (i.e. since there's nothing to add, structure is empty)
+    while not structure.isEmpty():
+        #pop the next node for search
+        node = structure.pop()
+        #check if each node contains a goal state. if not, move onward
+        for nextNode in problem.getSuccessors(node[0]):
+            if problem.isGoalState(nextNode[0]):
+                return nextNode #return goal node
+            #if this is a new state, mark as visited and 
+            if nextNode[0] not in visited:
+                visited.add(nextNode[0])
+                structure.push(nextNode)
+
+
+
+
+
+
+
+    nodes = problem.getSuccessors(start)
+    structure.push(nodes)
+
+    while not structure.isEmpty():
+        nodes = structure.pop()
+        for node in nodes:
+            if problem.isGoalState(node[0]):
+                return node[0]
+            structure.push(problem.getSuccessors(node))
+
+
+    #RESOLVE AT HOME: how to make this work for queue AND stack?
+    #presumably children stacked in reverse order??
+
+
+
+
 def depthFirstSearch(problem: SearchProblem):
     """
     Search the deepest nodes in the search tree first.
@@ -92,6 +142,9 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    
+    
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem):
