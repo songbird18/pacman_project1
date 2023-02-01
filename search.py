@@ -116,10 +116,11 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
+    # Initialize Data structure
     fringe = util.Stack()
-    fringe.push((problem.getStartState(), []))
+    fringe.push((problem.getStartState(), [])) # (position, sequence of actions) 
     closed = set()
+    # Expand in LIFO order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
         node, actions = fringe.pop()
         if problem.isGoalState(node):
@@ -133,10 +134,11 @@ def depthFirstSearch(problem: SearchProblem):
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    # Initialize Data structure
     fringe = util.Queue()
-    fringe.push((problem.getStartState(), []))
+    fringe.push((problem.getStartState(), [])) # (position, sequence of actions) 
     closed = set()
+    # Expand in FIFO order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
         node, actions = fringe.pop()
         if problem.isGoalState(node):
@@ -150,10 +152,11 @@ def breadthFirstSearch(problem: SearchProblem):
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    # Initialize Data structure
     fringe = util.PriorityQueue()
-    fringe.push((problem.getStartState(), [], 0), 0)
+    fringe.push((problem.getStartState(), [], 0), 0) # ((position, sequence of actions, g(x)), g(x)) 
     closed = set()
+    # Expand in Cost order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
         node, actions, totalCost = fringe.pop()
         if problem.isGoalState(node):
@@ -174,13 +177,13 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    # Initialize Data structure
     fringe = util.PriorityQueue()
     start = problem.getStartState()
     h = heuristic(start, problem)
-    fringe.push((start, [], 0), h)
+    fringe.push((start, [], 0), h) # ((position, sequence of actions, g(x)), f(x)) where f=h+g
     closed = dict()
-
+    # Expand in Cost order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
         node, actions, cost = fringe.pop()
         if problem.isGoalState(node):

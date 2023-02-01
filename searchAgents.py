@@ -298,7 +298,8 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
+        # Minimal state representation are the 
+        # position of the pacman and unvisited corners
         return (self.startingPosition, self.corners)
 
     def isGoalState(self, state: Any):
@@ -321,20 +322,16 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            # Add a successor state to the successor list if there is no wall in the way
             x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
-                nextCorner = list(state[1]).copy()
-                if (nextx, nexty) in nextCorner:
-                    nextCorner.remove((nextx, nexty))
-                successors.append( ( ((nextx, nexty), tuple(nextCorner)), action, 1) )
+                unvisited = list(state[1]).copy()
+                # Update the successor state if it is an unvisited corner.
+                if (nextx, nexty) in unvisited:
+                    unvisited.remove((nextx, nexty))
+                successors.append( ( ((nextx, nexty), tuple(unvisited)), action, 1) )
             
 
         self._expanded += 1 # DO NOT CHANGE
@@ -477,6 +474,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
     distances = []
+
     # Calculate distance to each food positions available.
     for foodPos in foodGrid.asList():
         distances.append(mazeDistance(position, foodPos, problem.startingGameState))
