@@ -102,26 +102,6 @@ def graphSearchByChels(problem: SearchProblem, structure):
 
 
 
-
-
-
-    nodes = problem.getSuccessors(start)
-    structure.push(nodes)
-
-    while not structure.isEmpty():
-        nodes = structure.pop()
-        for node in nodes:
-            if problem.isGoalState(node[0]):
-                return node[0]
-            structure.push(problem.getSuccessors(node))
-
-
-    #RESOLVE AT HOME: how to make this work for queue AND stack?
-    #presumably children stacked in reverse order??
-
-
-
-
 def depthFirstSearch(problem: SearchProblem):
     """
     Search the deepest nodes in the search tree first.
