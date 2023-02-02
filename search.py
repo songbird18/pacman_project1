@@ -154,17 +154,17 @@ def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     # Initialize Data structure
     fringe = util.PriorityQueue()
-    fringe.push((problem.getStartState(), [], 0), 0) # ((position, sequence of actions, g(x)), g(x)) 
+    fringe.push((problem.getStartState(), []), 0) # ((position, sequence of actions), g(x)) 
     closed = set()
     # Expand in Cost order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
-        node, actions, totalCost = fringe.pop()
+        node, actions = fringe.pop()
         if problem.isGoalState(node):
             return actions
         if node not in closed:
             closed.add(node)
             for childNode, nextAction, cost in problem.getSuccessors(node):
-                fringe.push((childNode, actions + [nextAction], totalCost + cost), totalCost + cost)
+                fringe.push((childNode, actions + [nextAction]), problem.getCostOfActions(actions) + cost)
 
     return []
 
@@ -181,18 +181,19 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     fringe = util.PriorityQueue()
     start = problem.getStartState()
     h = heuristic(start, problem)
-    fringe.push((start, [], 0), h) # ((position, sequence of actions, g(x)), f(x)) where f=h+g
+    fringe.push((start, []), h) # ((position, sequence of actions), f(x)) where f=h+g
     closed = dict()
     # Expand in Cost order and return sequence of actions if goal is reached 
     while not fringe.isEmpty():
-        node, actions, cost = fringe.pop()
+        node, actions = fringe.pop()
         if problem.isGoalState(node):
             return actions
-        if node not in closed or cost < closed[node]:
-            closed[node] = cost
+        if node not in closed or problem.getCostOfActions(actions) < closed[node]:
+            gCost = problem.getCostOfActions(actions)
+            closed[node] = gCost
             for childNode, nextAction, gChild in problem.getSuccessors(node):
-                fringe.push((childNode, actions + [nextAction], cost + gChild), 
-                            cost + gChild + heuristic(childNode, problem))
+                fringe.push((childNode, actions + [nextAction]), 
+                            gCost + gChild + heuristic(childNode, problem))
     return []
 
 # Abbreviations

@@ -292,6 +292,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.costFn = lambda x: 1
 
     def getStartState(self):
         """
@@ -331,7 +332,8 @@ class CornersProblem(search.SearchProblem):
                 # Update the successor state if it is an unvisited corner.
                 if (nextx, nexty) in unvisited:
                     unvisited.remove((nextx, nexty))
-                successors.append( ( ((nextx, nexty), tuple(unvisited)), action, 1) )
+                cost = self.costFn((nextx, nexty))
+                successors.append( ( ((nextx, nexty), tuple(unvisited)), action, cost) )
             
 
         self._expanded += 1 # DO NOT CHANGE
