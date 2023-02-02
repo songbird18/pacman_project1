@@ -1,1 +1,42 @@
 Insert your group number, members, and answers to the supplemental question of the project 1 here!
+Group Number: 9
+Team members: Chelsea Murray (CS5013) & Wonoo Choo (CS5013)
+
+QS1.1: DFS uses the Stack store its fringe states.
+
+QS1.2: The pacman doesn't necessarily explore all the squares on his way but it does explore a large detour.  
+
+QS2.1: BFS uses Queue as it requires FIFO. This way it explores all nodes in the fringe from the current layer before moving on to the next layer.
+
+QS3.1: Just the step cost of each actions that were returned from provided functions were used.
+        The cost function of StayWestSearchAgent is given by 2 ** pos[0]
+        The cost function of StayEastSearchAgent is given by .5 ** pos[0]
+
+QS4.1: The provided nullHeuristic always returns a 0. Therefore, it adds no value to the search algorithm, and A* that uses the nullHeuristic function essentially is equivalent to the UCS. 
+        Where the ManhattanDistance proveds more information about the state in regards to the goal, providing more information to the search algorithm to be able to search the goal state more efficiently.
+
+QS4.2: On openMaze, the A* search with manhattanHeuristic searches less space that is more directed towards the goal.
+        The A* search with nullHeuristic (which is equivalent to UCS) almost searched the entire maze as the frontier expanded in equial directions.
+        In the above case, as the cost function was just the action step, the results were same as the BFS: optimal path.
+        The DFS on the other hand were able to find a path however, it looped through the entire grid of the maze due to its Depth Search propery.
+
+QS5.1: The (x,y) tuple of the pacman position, and a tuptle of  (x, y) tuples of unvisited corner locations.
+        (pacmanPosition, (unvisitedCornerLocations))
+
+QS5.2: The implementation of BFS algorithm searches the minimal path until it reaches the goal state of visiting all the corner locations.
+        Therefore, the search will explore all states, until it has eaten all the food in each corners. And when it does get there, it will return the optimal path
+        taken to eat all 4 corners.
+
+QS6.1: The heuristic function that was used was a summation of the manhattan distance from the pacman to the closest corner location, 
+        and the total minimum distances between all remaning dots. Essentially, if the maze had no walls, this would give the minimum distance it would take to eat all
+        the remaining food in the maze. The strength is that it can give quite an accurate huristic if there were minaml walls in this path. However, the disadvantage is that
+        it would be quite inaccurate if there was a wall blocking the minimum path calculated by this heuristic function and required the pacman to take a huge detour. 
+
+QS7.1: The heuristic function that was implemented calculated the minimum maze distances to all points on the maze and took the maximum of these values (ie. minimum distance to the farthest food location) 
+        This is consistent as the distance to the farthest food location cannot increase/decrease at a greater rate than the number of steps taken.  
+        The strength of this method is that it does not overly underestimate the actual cost to eat all foods, allowing the search algorithm to not expand out to too many nodes. 
+        The potential weakness is that if there is a lot of food and a large maze size, then computing the BFS for all these food points, would be computationally heavy.
+
+QS8.1: The heuristic function is a BFS search through the map to find the closest food. 
+        This was achieved by editting the isGoalState function of the AnyFoodSearchProblem to return true if there is food on the given state. 
+        This greedy search problem is good at finding a solution quickly however the disadvantage is that this solution is suboptimal. 
