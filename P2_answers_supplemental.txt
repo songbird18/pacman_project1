@@ -9,3 +9,18 @@ position to attack Pacman) and strong encouragement to seek the next adjacent do
 of a ghost. Otherwise, he takes the path that leads him to the closest dot, without predicting the ghost's actions at
 all. This way, Pacman can consider risk/reward and choose to bypass a nearby dot in order to avoid ghosts on a turn-by-turn 
 basis.
+
+QS1.2: What is your value function and why do you think this estimation makes sense?
+Currently, there are 3 "options" for a value state in ReflexAgent:
+1) A large negative number (if the next state would put Pacman in the path of danger);
+2) A large positive number (if the next state would result in eating a dot, and isn't in the path of a ghost);
+3) A positive value that is a function of the proximity of the nearest dot (1/distance to dot).
+This means that when considering moves, the lowest-value moves (by far!) are the ones which move Pacman directly next
+to a ghost. The highest value moves (again, by a landslide!) are the ones which cause Pacman to eat a dot (and not
+encounter a ghost). In the case that there is no way to safely eat a dot for the next move, the chosen move will be 
+the highest positive value (in a range of 0<n<=1), which represents the distance to the nearest dot after that move (ex.
+a score of 1 means that Pacman will be within 1 square of a dot, while a score of 0.25 means that Pacman will be within
+4 squares of a dot).
+This makes sense because Pacman's goal is to eat food dots, as quickly as possible, so dots in close proximity are high
+priority--BUT, the game will immediately end if Pacman is caught by a ghost, so avoiding the ghost agent is a higher
+priority than food.
