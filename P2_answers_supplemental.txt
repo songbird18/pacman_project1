@@ -1,1 +1,11 @@
 Please Enter your team's full names and your answers to QS questions here!
+
+QS1.1: explain the implementation of ReflexAgent  in multiAgents.py and how you improved it.
+Initially, ReflexAgent made decisions for its next move based on the score of the next state. While this does inform 
+Pacman's movement, it doesn't fully consider the risks involved with moving in the direction of a ghost (i.e. Pacman
+might move towards a ghost if food pellets are in that direction). The current implementation provides strong 
+discouragement from moving into a position where Pacman is 1 space away from a ghost (which would put the ghost in a
+position to attack Pacman) and strong encouragement to seek the next adjacent dot IF it doesn't put Pacman in the path
+of a ghost. Otherwise, he takes the path that leads him to the closest dot, without predicting the ghost's actions at
+all. This way, Pacman can consider risk/reward and choose to bypass a nearby dot in order to avoid ghosts on a turn-by-turn 
+basis.

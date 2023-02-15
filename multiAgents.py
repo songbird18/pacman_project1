@@ -74,7 +74,44 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        # "indicator" is a very big number
+        # it tells pacman whether something is a very good idea or a very bad idea
+        # specifically, it is used when ghosts are close or food is close to prioritize food collection
+        # & discourage ghost contact
+        indicator = 9999999
+
+        # find ghosts
+        ghostPositions = currentGameState.getGhostPositions()
+
+        # sound the alarm and tell pacman that if this move puts him within 1 space of a ghost, DO NOT
+        for ghostPosition in ghostPositions:
+            if manhattanDistance(newPos, ghostPosition) < 2: 
+                return -indicator
+        
+        numFood = currentGameState.getNumFood()
+        nextNumFood = successorGameState.getNumFood()
+
+        # cheer very loudly and tell pacman that if this move results in eating a pellet, DO IT
+        if nextNumFood < numFood:
+            return indicator
+
+        
+        # finding the size of the map
+        width = newFood.width
+        height = newFood.height
+
+        # default value (longest distance possible on map)
+        minDistance = manhattanDistance((0,0),(width,height))
+
+        # find the closest food dot to pacman's newest position
+        for i in range(0,width):
+            for j in range(0,height):
+                if newFood[i][j]:
+                    distance = manhattanDistance(newPos,(i,j))
+                    minDistance = min(minDistance, distance)
+
+        # shorter distance = larger number = more incentive to move there
+        return 1/minDistance
 
 def scoreEvaluationFunction(currentGameState):
     """
