@@ -162,7 +162,62 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalActions = gameState.getLegalActions()
+        
+        # identify max score using recursion to search tree
+        max = 0
+        index = 0
+        counter = 0
+        for action in legalActions:
+            successor = gameState.generateSuccessor(0, action)
+            score = self.getExpectedScore(successor, 1, self.depth)
+            if score > max:
+                max = score
+                index = counter
+            counter += 1
+        
+        return legalActions[index]
+
+    #method to search tree for expected score
+    def getExpectedScore(self, gameState, agentIndex: int, depth: int):
+        
+        #no search needed if nothing left to search
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+        
+        #identify legal actions and the next agent to make a move (rollover to 0
+        # if all ghosts have taken their turn)
+        legalActions = gameState.getLegalActions(agentIndex)
+        nextAgent = agentIndex + 1
+        if nextAgent > gameState.getNumAgents():
+            nextAgent = 0
+        
+        #if rolling over to 0, we must be at the next depth of game states
+        if nextAgent > 0:
+            nextDepth = depth
+        else:
+            nextDepth = depth - 1
+
+        pacmanMax = 0
+        ghostSum = 0
+
+        #for every possible action, generate a successor, find the score by
+        #recursively calling this method
+        #if pacman, take the maximum score from successors
+        #if ghost, sum up scores to return an average (since equal probability)
+        for action in legalActions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            score = self.getExpectedScore(successor, nextAgent, nextDepth)
+
+            if agentIndex == 0 and score > pacmanMax:
+                pacmanMax = score
+            else:
+                ghostSum += score
+            
+        if agentIndex == 0:
+            return pacmanMax
+        else:
+            return ghostSum / len(legalActions)
 
 def betterEvaluationFunction(currentGameState):
     """
