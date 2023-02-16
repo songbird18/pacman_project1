@@ -135,7 +135,39 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, action = self.minimax(gameState, 0, 0)
+        return action
+    
+    def minimax(self, gameState, agent, currentDepth):
+        # If reached the 'leaf' node then return evaluation of the state
+        if currentDepth == self.depth or len(gameState.getLegalActions(agent)) == 0:
+            return self.evaluationFunction(gameState), None
+        
+        # Find the next Agent
+        nextAgent = (agent + 1) % gameState.getNumAgents()
+        # Update depth counter if we cycle back to the pacman agent
+        if nextAgent == 0:
+            currentDepth += 1
+
+        if agent == 0:
+            # Pacman (ie. MAX agent)
+            optValue = float('-inf')
+            optAction = None
+            for action in gameState.getLegalActions(agent):
+                nextValue,_ = self.minimax(gameState.generateSuccessor(agent, action), nextAgent, currentDepth)
+                if nextValue > optValue:
+                    optValue = nextValue
+                    optAction = action
+        else:
+            # Ghosts (ie. MIN agents)
+            optValue = float('inf')
+            optAction = None
+            for action in gameState.getLegalActions(agent):
+                nextValue,_ = self.minimax(gameState.generateSuccessor(agent, action), nextAgent, currentDepth)
+                if nextValue < optValue:
+                    optValue = nextValue
+                    optAction = action
+        return optValue, optAction
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -147,8 +179,48 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, action = self.alphaBeta(gameState, 0, 0, float('-inf'), float('inf'))
+        
+        return action
+    
+    def alphaBeta(self, gameState, agent, currentDepth, a, b):
+        # If reached the 'leaf' node then return evaluation of the state
+        if currentDepth == self.depth or len(gameState.getLegalActions(agent)) == 0:
+            return self.evaluationFunction(gameState), None
+        
+        # Find the next Agent
+        nextAgent = (agent + 1) % gameState.getNumAgents()
+        # Update depth counter if we cycle back to the pacman agent
+        if nextAgent == 0:
+            currentDepth += 1
 
+        if agent == 0:
+            # Pacman (ie. MAX agent)
+            optValue = float('-inf')
+            optAction = None
+            for action in gameState.getLegalActions(agent):
+                nextValue, _ = self.alphaBeta(gameState.generateSuccessor(agent, action), nextAgent, currentDepth, a, b)
+                if nextValue > optValue:
+                    optValue = nextValue
+                    optAction = action
+                    if optValue > b:
+                        return optValue, optAction
+                    a = max(a, optValue)
+            return optValue, optAction
+        else:
+            # Ghosts (ie. MIN agents)
+            optValue = float('inf')
+            optAction = None
+            for action in gameState.getLegalActions(agent):
+                nextValue, _ = self.alphaBeta(gameState.generateSuccessor(agent, action), nextAgent, currentDepth, a, b)
+                if nextValue < optValue:
+                    optValue = nextValue
+                    optAction = action
+                    if optValue < a:
+                        return optValue, optAction
+                    b = min(b, optValue)
+            return optValue, optAction
+    
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
