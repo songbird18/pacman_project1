@@ -171,8 +171,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Run Minimiax algorithm with initial values:
+        # current agent = pacman
+        # current depth = 0
+        _, action = self.minimax(gameState, 0, 0)
+        return action
+    
+    def minimax(self, gameState, agent, currentDepth):
+        """
+        Recursive function that iterates through all legal actions to search for the optimal action.
+        If the given agent is a MAX node it will find the action that maximizes reward.
+        If the given agent is a MIN node it will find the action that minimizes reward.
+        """
+        # If reached the 'leaf' node or the max search depth then return evaluation of the current state
+        if currentDepth == self.depth or len(gameState.getLegalActions(agent)) == 0:
+            return self.evaluationFunction(gameState), None
+        
+        # Find the next Agent
+        nextAgent = (agent + 1) % gameState.getNumAgents()
+        # Update depth counter if we cycle back to the pacman agent
+        if nextAgent == 0:
+            currentDepth += 1
+
+        if agent == 0:
+            # Pacman (ie. MAX agent)
+            optValue = float('-inf')
+            optAction = None
+            # Iterate over all possible leagal actions and find the action that results in MAXIMUM reward
+            for action in gameState.getLegalActions(agent):
+                nextValue,_ = self.minimax(gameState.generateSuccessor(agent, action), nextAgent, currentDepth)
+                if nextValue > optValue:
+                    optValue = nextValue
+                    optAction = action
+        else:
+            # Ghosts (ie. MIN agents)
+            optValue = float('inf')
+            optAction = None
+            # Iterate over all possible leagal actions and find the action that results in MINIMUM reward
+            for action in gameState.getLegalActions(agent):
+                nextValue,_ = self.minimax(gameState.generateSuccessor(agent, action), nextAgent, currentDepth)
+                if nextValue < optValue:
+                    optValue = nextValue
+                    optAction = action
+        return optValue, optAction
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -183,9 +224,63 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Run alphabeta pruning with initializing the following:
+        # current agent = pacman
+        # current depth = 0
+        # alpha         = -inf
+        # beta          = inf
+        _, action = self.alphaBeta(gameState, 0, 0, float('-inf'), float('inf'))
+        return action
+    
+    def alphaBeta(self, gameState, agent, currentDepth, a, b):
+        """
+        Recursive function that iterates through all legal actions to search for the optimal action.
+        If the given agent is a MAX node it will find the action that maximizes reward and it will
+        update the alpha value and prune if the given optimal value > beta.
+        If the given agent is a MIN node it will find the action that minimizes reward and it will
+        update the beta value and prune if the given optimal value < alpha.
+        """
+        # If reached the 'leaf' node or the max search depth then return evaluation of the current state
+        if currentDepth == self.depth or len(gameState.getLegalActions(agent)) == 0:
+            return self.evaluationFunction(gameState), None
+        
+        # Find the next Agent
+        nextAgent = (agent + 1) % gameState.getNumAgents()
+        # Update depth counter if we cycle back to the pacman agent
+        if nextAgent == 0:
+            currentDepth += 1
 
+        if agent == 0:
+            # Pacman (ie. MAX agent)
+            optValue = float('-inf')
+            optAction = None
+            # Iterate over all possible leagal actions and find the action that results in MAXIMUM reward
+            for action in gameState.getLegalActions(agent):
+                nextValue, _ = self.alphaBeta(gameState.generateSuccessor(agent, action), nextAgent, currentDepth, a, b)
+                if nextValue > optValue:
+                    optValue = nextValue
+                    optAction = action
+                    # MAX node alpha-beta pruning
+                    if optValue > b:
+                        return optValue, optAction
+                    a = max(a, optValue)
+            return optValue, optAction
+        else:
+            # Ghosts (ie. MIN agents)
+            optValue = float('inf')
+            optAction = None
+            # Iterate over all possible leagal actions and find the action that results in MAXIMUM reward
+            for action in gameState.getLegalActions(agent):
+                nextValue, _ = self.alphaBeta(gameState.generateSuccessor(agent, action), nextAgent, currentDepth, a, b)
+                if nextValue < optValue:
+                    optValue = nextValue
+                    optAction = action
+                    # MIN node alpha-beta pruning
+                    if optValue < a:
+                        return optValue, optAction
+                    b = min(b, optValue)
+            return optValue, optAction
+    
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
