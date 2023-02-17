@@ -189,14 +189,14 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         # if all ghosts have taken their turn)
         legalActions = gameState.getLegalActions(agentIndex)
         nextAgent = agentIndex + 1
-        if nextAgent > gameState.getNumAgents():
+        if nextAgent > gameState.getNumAgents() - 1:
             nextAgent = 0
         
         #if rolling over to 0, we must be at the next depth of game states
-        if nextAgent > 0:
-            nextDepth = depth
-        else:
+        if nextAgent == 0:
             nextDepth = depth - 1
+        else:
+            nextDepth = depth
 
         pacmanMax = 0
         ghostSum = 0
