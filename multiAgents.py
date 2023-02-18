@@ -274,29 +274,17 @@ def betterEvaluationFunction(currentGameState):
     return 10*foodScore + 5*score + 10*capsuleScore
 
 
-def findClosest(currentGameState,items, pacPos):
-    #this does a bfs to find the closest item to pacman
-    queue = util.Queue()
-    queue.push(currentGameState)
-
-    closed = set()
-
-    while not queue.isEmpty():
-        state = queue.pop()
-        pos = x,y = state.getPacmanPosition()
-        #if the list of item locations contains this future pacman position,
-        #find the maze distance to that position from the current state
-        #and return that as the distance
-        if pos in items:
-            distance = mazeDistance(pacPos,pos,currentGameState)
-            return distance
-        #otherwise, add the next depth to the queue
-        if pos not in closed:
-            closed.add(pos)
-            for action in state.getLegalPacmanActions():
-                nextState = state.generatePacmanSuccessor(action)
-                queue.push(nextState)
-        
+def findClosest(currentGameState, items, pacPos):
+    # Calculate distance to each food positions available.
+    distances = []
+    for foodPos in items:
+        distances.append(mazeDistance(pacPos, foodPos, currentGameState))
+    
+    # return Maximum distance to a food
+    if len(distances) > 0:
+        return min(distances)
+    else:
+        return 0
         
 
 # Abbreviation
