@@ -271,7 +271,7 @@ def betterEvaluationFunction(currentGameState):
     
     #played around with these numbers for a bit to see what was most effective
     #(as of right now, that would be: nothing)
-    return 10*foodScore + 5*score + 10*capsuleScore
+    return 10*foodScore + 1*score + 10*capsuleScore
 
 
 def findClosest(currentGameState, items, pacPos):
