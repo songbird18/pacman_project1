@@ -165,7 +165,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         legalActions = gameState.getLegalActions()
         
-        # identify max score using recursion to search tree
+        # Identify max score using recursion to search tree
         max = 0
         index = 0
         counter = 0
@@ -179,21 +179,21 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         
         return legalActions[index]
 
-    #method to search tree for expected score
+    # Method to search tree for expected score
     def getExpectedScore(self, gameState, agentIndex: int, depth: int):
         
         #no search needed if nothing left to search
         if depth == 0 or gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState)
         
-        #identify legal actions and the next agent to make a move (rollover to 0
-        # if all ghosts have taken their turn)
+        # Identify legal actions and the next agent to make a move (rollover to 0
+        # If all ghosts have taken their turn)
         legalActions = gameState.getLegalActions(agentIndex)
         nextAgent = agentIndex + 1
         if nextAgent > gameState.getNumAgents() - 1:
             nextAgent = 0
         
-        #if rolling over to 0, we must be at the next depth of game states
+        # If rolling over to 0, we must be at the next depth of game states
         if nextAgent == 0:
             nextDepth = depth - 1
         else:
@@ -202,10 +202,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         pacmanMax = 0
         ghostSum = 0
 
-        #for every possible action, generate a successor, find the score by
-        #recursively calling this method
-        #if pacman, take the maximum score from successors
-        #if ghost, sum up scores to return an average (since equal probability)
+        # For every possible action, generate a successor, find the score by
+        # Recursively calling this method
+        # If pacman, take the maximum score from successors
+        # If ghost, sum up scores to return an average (since equal probability)
         for action in legalActions:
             successor = gameState.generateSuccessor(agentIndex, action)
             score = self.getExpectedScore(successor, nextAgent, nextDepth)
@@ -229,28 +229,27 @@ def betterEvaluationFunction(currentGameState):
     """
     "*** YOUR CODE HERE ***"
     
-    #get current score
+    # Get current score
     score = currentGameState.getScore()
-    #a big number for indicating ghost dangers
+    # Big number for indicating ghost dangers
     indicator = 9999999
     
     if currentGameState.isWin() or currentGameState.isLose():
         return score
 
-    #get pacman's position and the states of the ghosts
+    # Get pacman's position and the states of the ghosts
     pos = currentGameState.getPacmanPosition()
     ghostStates = currentGameState.getGhostStates()
 
-    #get food locations as a list
-    #and capsule locations as well
+    # Get food and capsule locations as a list
     food = currentGameState.getFood().asList()
     capsules = currentGameState.getCapsules()
 
-    #for each ghost, find the distance between pacman and ghost
-    #if ghost is close, act in response
-    #if we can confidently say the ghost will be scared for long enough,
-    #go get the ghost
-    #otherwise do not move towards the ghost
+    # For each ghost, find the Manhattan distance between pacman and ghost
+    # if ghost is close, act in response
+    # if we can confidently say the ghost will be scared for long enough,
+    # go get the ghost
+    # otherwise do not move towards the ghost
     for ghost in ghostStates:
         dist = manhattanDistance(pos,ghost.getPosition())
         if ghost.scaredTimer > dist and dist < 3:
@@ -258,20 +257,20 @@ def betterEvaluationFunction(currentGameState):
         elif ghost.scaredTimer < dist and dist < 3:
             return -indicator
     
-    #find closest food and use the reciprocal to evaluate later
+    # Find closest food and use the reciprocal to evaluate later
     foodDistance = findClosest(currentGameState,food,pos)
     foodScore = 1/foodDistance
 
-    #find closest capsule (if any) and use reciprocal to evaluate later
+    # Find closest capsule (if any) and use reciprocal to evaluate later
     capsuleDistance = findClosest(currentGameState,capsules,pos)
     if capsuleDistance == 0:
         capsuleScore = 0
     else:
         capsuleScore = 1/capsuleDistance
     
-    #played around with these numbers for a bit to see what was most effective
-    #(as of right now, that would be: nothing)
-    return 10*foodScore + 1*score + 10*capsuleScore
+    # Played around with these numbers for a bit to see what was most effective
+    # (as of right now, that would be: nothing)
+    return 10 * foodScore + 1 * score + 10 * capsuleScore
 
 
 def findClosest(currentGameState, items, pacPos):
@@ -280,7 +279,7 @@ def findClosest(currentGameState, items, pacPos):
     for foodPos in items:
         distances.append(mazeDistance(pacPos, foodPos, currentGameState))
     
-    # return Maximum distance to a food
+    # Return Minimum distance to a food
     if len(distances) > 0:
         return min(distances)
     else:
