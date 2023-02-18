@@ -17,6 +17,7 @@ from game import Directions
 import random, util
 
 from game import Agent
+from searchAgents import mazeDistance
 
 class ReflexAgent(Agent):
     """
@@ -227,7 +228,76 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    #get current score
+    score = currentGameState.getScore()
+    #a big number for indicating ghost dangers
+    indicator = 9999999
+    
+    if currentGameState.isWin() or currentGameState.isLose():
+        return score
+
+    #get pacman's position and the states of the ghosts
+    pos = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
+
+    #get food locations as a list
+    #and capsule locations as well
+    food = currentGameState.getFood().asList()
+    capsules = currentGameState.getCapsules()
+
+    #for each ghost, find the distance between pacman and ghost
+    #if ghost is close, act in response
+    #if we can confidently say the ghost will be scared for long enough,
+    #go get the ghost
+    #otherwise do not move towards the ghost
+    for ghost in ghostStates:
+        dist = manhattanDistance(pos,ghost.getPosition())
+        if ghost.scaredTimer > dist and dist < 3:
+            return indicator
+        elif ghost.scaredTimer < dist and dist < 3:
+            return -indicator
+    
+    #find closest food and use the reciprocal to evaluate later
+    foodDistance = findClosest(currentGameState,food,pos)
+    foodScore = 1/foodDistance
+
+    #find closest capsule (if any) and use reciprocal to evaluate later
+    capsuleDistance = findClosest(currentGameState,capsules,pos)
+    if capsuleDistance == 0:
+        capsuleScore = 0
+    else:
+        capsuleScore = 1/capsuleDistance
+    
+    #played around with these numbers for a bit to see what was most effective
+    #(as of right now, that would be: nothing)
+    return 10*foodScore + 5*score + 10*capsuleScore
+
+
+def findClosest(currentGameState,items, pacPos):
+    #this does a bfs to find the closest item to pacman
+    queue = util.Queue()
+    queue.push(currentGameState)
+
+    closed = set()
+
+    while not queue.isEmpty():
+        state = queue.pop()
+        pos = x,y = state.getPacmanPosition()
+        #if the list of item locations contains this future pacman position,
+        #find the maze distance to that position from the current state
+        #and return that as the distance
+        if pos in items:
+            distance = mazeDistance(pacPos,pos,currentGameState)
+            return distance
+        #otherwise, add the next depth to the queue
+        if pos not in closed:
+            closed.add(pos)
+            for action in state.getLegalPacmanActions():
+                nextState = state.generatePacmanSuccessor(action)
+                queue.push(nextState)
+        
+        
 
 # Abbreviation
 better = betterEvaluationFunction
