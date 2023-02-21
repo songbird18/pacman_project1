@@ -47,3 +47,16 @@ QS 3.2: As instructed for grading purposes, the nodes are not pruned when they h
         reward value. The node that came first is given priority, thus if action East and West gives
         the same reward and action East was observed first, then the AlphaBetaAgent will stick with 
         the action East as it was the first visited node.
+
+QS 4.1: Explain your Expectimax algorithm
+The Expectimax agent is set to evaluate 1) the score at the current state, if it is an end state; 2) return the highest
+score if the agent at the current depth is Pacman; 3) return the average of scores (expected score) if the agent at the
+current depth is a ghost. The highest score is determined by searching outcomes recursively with a helper method until
+the deepest level of the search tree is reached.
+
+Q5.1: explain your new evaluation function, why do you think this new evaluation function is better compared to the previous one?
+The new evaluation function, rather than evaluating the ideal action for the immediate next state, takes the time to do a 
+breadth-first search of future outcomes and takes a high-scoring path. It does this by evaluating future eating opportunities, 
+capsule opportunities, and the chance of encountering a scared ghost (good) versus an unscared ghost (bad). This evaluation 
+function gives better results because it considers the consequences of upcoming actions over many "turns" instead of just the 
+next depth.
