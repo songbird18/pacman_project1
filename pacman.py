@@ -283,11 +283,11 @@ class ClassicGameRules:
     def __init__(self, timeout=30):
         self.timeout = timeout
 
-    def newGame(self, layout, pacmanAgent, ghostAgents, display, quiet=False, catchExceptions=False):
+    def newGame(self, layout, horizon, pacmanAgent, ghostAgents, display, quiet=False, catchExceptions=False):
         agents = [pacmanAgent] + ghostAgents[:layout.getNumGhosts()]
         initState = GameState()
         initState.initialize(layout, len(ghostAgents))
-        game = Game(agents, display, self, catchExceptions=catchExceptions)
+        game = Game(agents, horizon, display, self, catchExceptions=catchExceptions)
         game.state = initState
         self.initialState = initState.deepCopy()
         self.quiet = quiet
@@ -518,6 +518,8 @@ def readCommand(argv):
 
     parser.add_option('-n', '--numGames', dest='numGames', type='int',
                       help=default('the number of GAMES to play'), metavar='GAMES', default=1)
+    parser.add_option('-m', dest='maxHorizon', type='int',
+                      help=default('The maximum number of timesteps per game'), metavar='GAMES', default=-1)
     parser.add_option('-l', '--layout', dest='layout',
                       help=default(
                           'the LAYOUT_FILE from which to load the map layout'),
@@ -569,10 +571,19 @@ def readCommand(argv):
     if args['layout'] == None:
         raise Exception("The layout " + options.layout + " cannot be found")
 
+    args['horizon'] = options.maxHorizon
+
     # Choose a Pacman agent
     noKeyboard = options.gameToReplay == None and (
         options.textGraphics or options.quietGraphics)
     pacmanType = loadAgent(options.pacman, noKeyboard)
+    if options.pacman == "PacmanDeepQAgent":
+        print("options.agentArgs", options.agentArgs)
+        layout_str = "layout_input={}".format(options.layout)
+        if options.agentArgs:
+            options.agentArgs += layout_str
+        else:
+            options.agentArgs = layout_str
     agentOpts = parseAgentArgs(options.agentArgs)
     if options.numTraining > 0:
         args['numTraining'] = options.numTraining
@@ -672,7 +683,7 @@ def replayGame(layout, actions, display):
     display.finish()
 
 
-def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, catchExceptions=False, timeout=30):
+def runGames(layout, horizon, pacman, ghosts, display, numGames, record, numTraining=0, catchExceptions=False, timeout=30):
     import __main__
     __main__.__dict__['_display'] = display
 
@@ -680,6 +691,8 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
     games = []
 
     for i in range(numGames):
+        # if i % 10 == 0:
+        #     print("numGames played: [{}/{}]".format(i, numGames))
         beQuiet = i < numTraining
         if beQuiet:
                 # Suppress output and graphics
@@ -689,7 +702,7 @@ def runGames(layout, pacman, ghosts, display, numGames, record, numTraining=0, c
         else:
             gameDisplay = display
             rules.quiet = False
-        game = rules.newGame(layout, pacman, ghosts,
+        game = rules.newGame(layout, horizon, pacman, ghosts,
                              gameDisplay, beQuiet, catchExceptions)
         game.run()
         if not beQuiet:
