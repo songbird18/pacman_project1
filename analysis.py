@@ -33,7 +33,7 @@ def question2b():
     """
       Prefer the close exit (+1), but avoiding the cliff (-10).
     """
-    answerDiscount = 0.3
+    answerDiscount = 0.1
     answerNoise = 0.1
     answerLivingReward = -0.01
     return answerDiscount, answerNoise, answerLivingReward

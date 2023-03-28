@@ -1,0 +1,62 @@
+QS1.1   computeActionFromValues(state) were implemented by iterating through
+        all possible actions available from the given state and finding the
+        action that resulted in maximum reward by using computeQValueFromValues 
+        function.
+
+QS1.2   computeQValueFromValues(state, action) was implemented by using the known
+        MDP to find all possible transitions from the given state action pair. 
+        Using the possible transition probability and state, the Q value of the 
+        given state action value was computed.
+
+QS2.1   1. For the agent to select the close exit it must believe that reward of 
+        1, is better than reward of 10 from its current position. Therefore,
+        discount of 0.1 was selected. For the agent to risk the cliff, the agent 
+        must believe that risking the cliff will be worth the reward at the end 
+        of it which in this case is 1, therefore noise=0. To direct the agent 
+        towards a reward, living cost of -0.1 was selected as if its too big, 
+        the agent may think jumping off the cliff straight away to be the better
+        option than reaching a goal.
+
+        2. For the agent to select the close exit it must believe that reward of 
+        1, is better than reward of 10 from its current position. Therefore,
+        discount of 0.1 was selected. For the agent to avoid the cliff, induce 
+        noise: noise = 0.1. To direct the agent towards a reward: 
+        living cost = -0.1
+
+        3. To direct agent towards distant exit: discount=1 so that there is no
+        discount and where ever it is, it will be attracted to distant exit. To
+        direct agent to risking the cliff, remove noise: noise=0, now there is 
+        no 'risk' of risking the cliff. To direct the agent towards a reward:
+        living cost = -0.1.
+
+        4. To direct agent towards distant exit: discount=1 so that there is no
+        discount and where ever it is, it will be attracted to distant exit. To
+        direct agent to avoiding the cliff, induce noise: noise=0.1, now the risk
+        of falling to cliff is not worth it and goes around. To direct the agent
+        towards a reward: living cost = -0.1.
+
+        5. To direct agent to stay in the maze: living cost=10. To make sure 
+        the agent doesn't exit through a reward: discount=0.01. To make sure
+        it doesn't accidentally exit: noise=0.
+
+QS3.1   First the agent initializes Q as a counter where it takes [state, action]
+        to retrieve its value for the state action pair. The Q value update was
+        computed by first finding the Q value for current state action pair and
+        the maximum Q value of the next state was computed using 
+        computeValueFromQValues. The computeValueFromQValues were computed by 
+        iterating through the possible actions from that state and computing the
+        Q value of the state action pair of the action that gave the most reward. 
+
+QS4.1   Yes, when epsilon=0.1, the agent exploited its known policy most of the 
+        time however, when epsilon=0.5, it explored more of the grid. Thus, when
+        the value of the epsilon was low, it took much longer for it to compute 
+        the Q value for all possible state action pair than when the value of 
+        epsilon was high and it was able to find the optimal policy faster.
+
+QS4 optional:
+        python crawler.py works with no additional code. I initially increased the
+        value of epsilon to be high to increase exploration of the agent. Then,
+        the epsilon was set to a lower value like 0.0001, and it was able to 
+        walk forward and exploit the learned policy. Even when epsilon was set
+        to be constant value of 0.1, it was able to exploit and explore its 
+        policy.
