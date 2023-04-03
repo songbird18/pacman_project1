@@ -107,5 +107,5 @@ class DigitClassificationModel(object):
                                     #  self.learning_rate * (1/ (1 + self.learning_decay * k)))
             # Check for model accuracy
             # Return if accuracy > 98*=%
-            if dataset.get_validation_accuracy() >= 0.98:
+            if dataset.get_validation_accuracy() >= 0.981:
                 return
