@@ -1,6 +1,7 @@
 ### code base: ai.berkeley.edu
 
 import nn
+from backend import DigitClassificationDataset
 
 
 class DigitClassificationModel(object):
@@ -20,7 +21,32 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.batch_size = 25        # batch size
+        self.n_layers = 4           # Number of layers
+        self.l_size = [784, 400, 300, 200]    # Size of layers
+        self.num_y = 10             # Number of labels
+        self.learning_rate = -0.15    # Learning rate
+        self.learning_decay = 0.35    # Changes learning rate
+        self.min_learning_rate = -0.001 # Minimum Learning rate
 
+        # weights
+        self.w = []
+        self.b = []
+        for i in range(1, self.n_layers):
+            self.w.append(nn.Parameter(self.l_size[i-1], self.l_size[i]))
+            self.b.append(nn.Parameter(1, self.l_size[i]))
+
+        # Output vector
+        self.w.append(nn.Parameter(self.l_size[-1], self.num_y))
+        self.b.append(nn.Parameter(1, self.num_y))
+
+    def layer(sef, x, w, b, output=False):
+        x = nn.Linear(x, w)
+        x = nn.AddBias(x, b)
+        if output:
+            return x
+        return nn.ReLU(x)
+    
     def run(self, x):
         """
         Runs the model for a batch of examples.
@@ -36,7 +62,12 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        # First hidden layer
+        for w, b in zip(self.w[:-1], self.b[:-1]):
+            x = self.layer(x, w, b)
 
+        return self.layer(x, self.w[-1], self.b[-1], output=True)
+            
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
@@ -51,11 +82,30 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        h = self.run(x)
+        loss = nn.SoftmaxLoss(h, y)
+        return loss
 
-    def train(self, dataset):
+    def train(self, dataset: DigitClassificationDataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
-
-
+        k = 0
+        while True:
+            for row_vect, y in dataset.iterate_once(self.batch_size):
+                # Calculate loss and gradient
+                loss = self.get_loss(row_vect, y)
+                gradients = nn.gradients(loss, (*self.w, *self.b))
+                # Update Parameters
+                for param, grad in zip((*self.w, *self.b), gradients):
+                    param.update(grad, self.learning_rate)
+            # Update learning rate after one epoch
+            k += 1
+            self.learning_rate = min(self.min_learning_rate, 
+                                     self.learning_rate * self.learning_decay)
+                                    #  self.learning_rate * (1/ (1 + self.learning_decay * k)))
+            # Check for model accuracy
+            # Return if accuracy > 98*=%
+            if dataset.get_validation_accuracy() >= 0.98:
+                return
