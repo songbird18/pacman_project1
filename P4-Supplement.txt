@@ -1,0 +1,18 @@
+Group Number: 9
+Team members: Chelsea Murray (CS5013) & Wonoo Choo (CS5013)
+
+Section 1 - Please describe in 2-3 sentences your methodology for choosing the number of hidden layers, 
+            batch size, learning rates, and number of nodes. Please mention any reduction schemas utilized 
+            or any noteworthy trial and error experiments.
+
+I chose the 3 hidden layers with sizes of 400, 300, and 200 so that the layers funnel down to a decreasing
+size to the final output layer. The learning rate was chosen to begin at 0.15 and after every epoch, the 
+learning rate was decayed by a factor of 0.35, where the minimum learning rate was set to be 0.001. This 
+was done so that it can have higher learning rate initially and when it reaches the desired accuracy, the
+learning rate will decrease over time to minimize fluctuation in the performance of the model. The layer
+size and the learning rate was chosen with trial and error. It was found that a single layer was under
+performing and struggled to reach accuracy of 98% in 5 epochs, so additional layers was chosen. Initial
+learning rate greater than 0.15 were too high and it would fluctuate even at initial stages of learning. 
+The decay rate was set as 0.35 as anything higher was decaying too slowly and the performance fluctuated 
+while anything lower, the learning rate decayed too quickly and the learning process was too slow. The 
+batch size of 25 was chosen at at random and it worked. 
