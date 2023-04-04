@@ -15,4 +15,5 @@ performing and struggled to reach accuracy of 98% in 5 epochs, so additional lay
 learning rate greater than 0.15 were too high and it would fluctuate even at initial stages of learning. 
 The decay rate was set as 0.35 as anything higher was decaying too slowly and the performance fluctuated 
 while anything lower, the learning rate decayed too quickly and the learning process was too slow. The 
-batch size of 25 was chosen at at random and it worked. 
+batch size of 25 was chosen at at random and it worked. I chose this as it was a small enough batch that 
+is manageable computationally and is not too small to be able to give the model correct direction to learn.
