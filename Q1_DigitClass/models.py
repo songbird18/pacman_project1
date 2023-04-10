@@ -40,7 +40,7 @@ class DigitClassificationModel(object):
         self.w.append(nn.Parameter(self.l_size[-1], self.num_y))
         self.b.append(nn.Parameter(1, self.num_y))
 
-    def layer(sef, x, w, b, output=False):
+    def layer(self, x, w, b, output=False):
         x = nn.Linear(x, w)
         x = nn.AddBias(x, b)
         if output:
