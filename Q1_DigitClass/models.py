@@ -20,7 +20,6 @@ class DigitClassificationModel(object):
     """
     def __init__(self):
         # Initialize your model parameters here
-        "*** YOUR CODE HERE ***"
         self.batch_size = 25        # batch size
         self.n_layers = 4           # Number of layers
         self.l_size = [784, 400, 300, 200]    # Size of layers
@@ -29,18 +28,22 @@ class DigitClassificationModel(object):
         self.learning_decay = 0.35    # Changes learning rate
         self.min_learning_rate = -0.001 # Minimum Learning rate
 
-        # weights
+        # Initialize weights and bias parameters
         self.w = []
         self.b = []
         for i in range(1, self.n_layers):
             self.w.append(nn.Parameter(self.l_size[i-1], self.l_size[i]))
             self.b.append(nn.Parameter(1, self.l_size[i]))
 
-        # Output vector
+        # Output Layer
         self.w.append(nn.Parameter(self.l_size[-1], self.num_y))
         self.b.append(nn.Parameter(1, self.num_y))
 
     def layer(self, x, w, b, output=False):
+        """
+        Computes a single layer of the neural network with the given 
+        weights and bias.
+        """
         x = nn.Linear(x, w)
         x = nn.AddBias(x, b)
         if output:
@@ -62,7 +65,7 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
-        # First hidden layer
+        # Iterate through layers to compute prediction except for the final layer
         for w, b in zip(self.w[:-1], self.b[:-1]):
             x = self.layer(x, w, b)
 
@@ -82,7 +85,9 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        # Compute prediction
         h = self.run(x)
+        # Calculate loss using SoftmaxxLoss function
         loss = nn.SoftmaxLoss(h, y)
         return loss
 
