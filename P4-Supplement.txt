@@ -36,3 +36,13 @@ in two different boxes, but rather that each object is only detected in one box,
 it has the greatest probability of identifying that object (meaning it is most likely to contain the object, 
 and to contain the whole object). Non-max suppression ensures the most accurate result when simplifying many
 detected objects to a few defined regions of highest likelihood to contain the desired object.
+
+Section 2.5 - In 2-3 sentences explain the results, scores, and boxes in the output image.
+
+The boxes drawn over the image depict the results of 1) filtering (identifying regions of the image which
+have a significant likelihood of containing an object of some class), and 2) non-max suppression (reducing the
+regions to only the boxes most likely to contain an object without significant overlap with another box of 
+greater likelihood). The resulting image shows the visual representation of the regions which "won out" in 
+non-max suppression and their scores for a likely object (i.e. "car 0.68" means 68% chance the box contains 
+a car). Only the regions of the image which meet a certain threshold of probability of containing an object
+of any class are actually drawn and described.
