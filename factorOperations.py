@@ -100,10 +100,30 @@ def joinFactors(factors: List[Factor]):
                     "Input factors: \n" +
                     "\n".join(map(str, factors)))
 
-
     "*** YOUR CODE HERE ***"
-    raiseNotDefined()
-    "*** END YOUR CODE HERE ***"
+    # Get conditioned & unconditioned variables and Variable Domains
+    conditionedVars = set()
+    unconditionedVars = set()
+    varDomain = {}
+    for factor in factors:
+        conditionedVars.update(factor.conditionedVariables())
+        unconditionedVars.update(factor.unconditionedVariables())
+        varDomain.update(factor.variableDomainsDict())
+        
+    # Remove variables that is in conditionedVars if it exists in unconditionedVars
+    conditionedVars = conditionedVars - unconditionedVars
+
+    # Create new Factor
+    newFactor = Factor(unconditionedVars, conditionedVars, varDomain)
+    
+    # Compute Probability for all possible assignments
+    for x in newFactor.getAllPossibleAssignmentDicts():
+        p = 1
+        for factor in factors:
+            p *= factor.getProbability(x)
+        newFactor.setProbability(x, p)
+
+    return newFactor
 
 ########### ########### ###########
 ########### QUESTION 3  ###########
@@ -153,8 +173,28 @@ def eliminateWithCallTracking(callTrackingList=None):
                     "unconditionedVariables: " + str(factor.unconditionedVariables()))
 
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-        "*** END YOUR CODE HERE ***"
+        # Get Factor Info
+        conditionedVars = factor.conditionedVariables()
+        unconditionedVars = factor.unconditionedVariables()
+        varDomain = factor.variableDomainsDict()
+        elim_vars = varDomain[eliminationVariable]
+
+        # Remove Elimination Variable
+        unconditionedVars.remove(eliminationVariable)
+        varDomain.pop(eliminationVariable)
+
+        # Create new Factor
+        newFactor = Factor(unconditionedVars, conditionedVars, varDomain)
+
+        # Iterate over all possible new assignments to compute possiblility
+        # By summing over the elimination variable
+        for x in newFactor.getAllPossibleAssignmentDicts():
+            p = 0
+            for var in elim_vars:
+                x[eliminationVariable] = var
+                p += factor.getProbability(x)
+            newFactor.setProbability(x, p)
+        return newFactor
 
     return eliminate
 
