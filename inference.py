@@ -55,14 +55,30 @@ def constructBayesNet(gameState: hunters.GameState):
     X_RANGE = gameState.getWalls().width
     Y_RANGE = gameState.getWalls().height
     MAX_NOISE = 7
+    MAX_DIST = manhattanDistance((X_RANGE, Y_RANGE), (0, 0))
 
-    variables = []
-    edges = []
+    # List all Variables and Edges
+    variables = [PAC, GHOST0, GHOST1, OBS0, OBS1]
+    edges = [(GHOST0, OBS0), (PAC, OBS0), (PAC, OBS1), (GHOST1, OBS1)]
+    # List all variable domains
     variableDomainsDict = {}
 
-    "*** YOUR CODE HERE ***"
-    raiseNotDefined()
-    "*** END YOUR CODE HERE ***"
+    # All possible positions of agents on the grid
+    agent_var = []
+    for x in range(X_RANGE):
+        for y in range(Y_RANGE):
+            agent_var.append((x,y))
+    # All possible values of observed distance
+    obs_var = []
+    for d in range(MAX_DIST + MAX_NOISE - 1):
+        obs_var.append(d)
+
+    # Assign Variables 
+    variableDomainsDict[PAC] = agent_var
+    variableDomainsDict[GHOST0] = agent_var
+    variableDomainsDict[GHOST1] = agent_var
+    variableDomainsDict[OBS0] = obs_var
+    variableDomainsDict[OBS1] = obs_var
 
     net = bn.constructEmptyBayesNet(variables, edges, variableDomainsDict)
     return net
@@ -182,7 +198,29 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
             eliminationOrder = sorted(list(eliminationVariables))
 
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        allCPTs = bayesNet.getAllCPTsWithEvidence()
+        remove_id = []
+        for i in range(len(bayesNet.getAllCPTsWithEvidence())):
+            factor = allCPTs[i]
+            for elim in eliminationOrder:
+                if elim in factor.variables():
+                    if len(factor.unconditionedVariables()) > 1 :
+                        allCPTs[i] = eliminate(factor, elim)
+                    else:
+                        # allCPTs.remove(factor)
+                        remove_id.append(i)
+        for i in remove_id:
+            allCPTs.pop(i)      
+
+        for i in range(len(allCPTs) - 1):
+            allCPTs[i+1] = joinFactors((allCPTs[i], allCPTs[i+1]))
+        new = allCPTs[-1]
+        new = joinFactorsByVariable((new), queryVariables[0])
+        
+
+            
+        return allCPTs[-1]
+
         "*** END YOUR CODE HERE ***"
 
 
