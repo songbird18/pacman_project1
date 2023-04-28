@@ -348,7 +348,16 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # Compute total probability
+        total = self.total()
+        
+        # If it sums to 0 then end function 
+        if total == 0:
+            return
+        
+        # Update probability for each item
+        for key, value in self.items():
+            self[key] = value/total
         "*** END YOUR CODE HERE ***"
 
     def sample(self):
@@ -373,7 +382,25 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # Normalize Distribution
+        self.normalize()
+
+        # Get keys and probability
+        probs = self.values()
+        keys = self.keys()
+
+        # sample [0, 1) interval
+        sample = random.random()
+
+        # Iterate through list of probabiliy while cumulating probability
+        # until the value of the sample is less than th cum sum
+        i = 0
+        cumSum = probs[0]
+        while sample > cumSum:
+            i += 1
+            cumSum += probs[i]
+        
+        return keys[i]
         "*** END YOUR CODE HERE ***"
 
 
@@ -448,7 +475,17 @@ class InferenceModule:
         Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # Handle Special case of jail        
+        if ghostPosition == jailPosition and noisyDistance is None:
+            return 1
+        elif ghostPosition == jailPosition and noisyDistance is not None:
+            return 0
+        elif ghostPosition != jailPosition and noisyDistance is None:
+            return 0
+        
+        # Calculate true distance between pacman and ghost
+        trueDistance = manhattanDistance(pacmanPosition, ghostPosition)
+        return busters.getObservationProbability(noisyDistance, trueDistance)
         "*** END YOUR CODE HERE ***"
 
     def setGhostPosition(self, gameState, ghostPosition, index):
