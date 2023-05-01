@@ -149,5 +149,42 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # set to an extremely large number by default (will be overwritten)
+        # this will store pacman's distance to the closest ghost
+        ghost_dist = 100000000
+        # init ghost position (maze position for the closest ghost to pacman)
+        ghost_pos = None
+        # iterate over beliefs for each uncaptured ghost
+        for dist in livingGhostPositionDistributions:
+            # get highest belief/most likely next position
+            temp_pos = dist.argMax()
+            # get Pacman's maze distance to the chosen position
+            temp_dist = self.distancer.getDistance(pacmanPosition, temp_pos)
+            # if this ghost is closer than the previous closest ghost,
+            # update the distance & the position for the closest ghost
+            if temp_dist < ghost_dist:
+                ghost_dist = temp_dist
+                ghost_pos = temp_pos
+
+        # set to a very large number (will be overridden)
+        # indicates the distance pacman will be from the closest ghost (belief),
+        # provided the most optimal action is taken
+        next_dist = 100000000
+        # init action (stores most optimal action, which minimizes
+        # distance to closest likely ghost position)
+        action = None
+        # iterate over legal actions for pacman
+        for a in legal:
+            # get pac's next position given the current legal action
+            next_pos = Actions.getSuccessor(pacmanPosition, a)
+            # get pac's maze distance to the closest ghost, if the current 
+            # action is taken
+            temp = self.distancer.getDistance(next_pos, ghost_pos)
+            # if this is closer than the previous best action, update
+            # the distance and action to reflect shortest path
+            if temp < next_dist:
+                next_dist = temp
+                action = a
+        # return the most optimal action given nearest likely ghost
+        return action
         "*** END YOUR CODE HERE ***"

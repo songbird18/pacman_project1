@@ -625,7 +625,20 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # create distribution for results after 1 time step
+        dist = DiscreteDistribution()
+        # iterate over all previous positions when generating beliefs for next time step
+        for oldPos in self.allPositions:
+            # generate new action dist based on the given oldPos
+            newPosDist = self.getPositionDistribution(gameState, oldPos)
+            # get the belief from oldPos
+            oldProb = self.beliefs[oldPos]
+            # for all items in the new distribution, set the result at that position
+            # to the joint prob of the old position & the new position
+            for newPos in newPosDist.keys():
+                dist[newPos] += oldProb * newPosDist[newPos]
+        # set beliefs to match the elapsed time step (probability results)
+        self.beliefs = dist
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -657,7 +670,35 @@ class ParticleFilter(InferenceModule):
         """
         self.particles = []
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        # get number of ghost positions that need to be distributed
+        n = self.numParticles
+        # get number of legal positions for ghosts on the board
+        size = len(self.legalPositions)
+
+        while n > 0:
+            # if more ghost positions need to be assigned than legal spaces
+            # exist, then fill every legal position, subract the number of
+            # particles assigned from the total number, and iterate loop
+            if n > size:
+                self.particles += self.legalPositions
+                n -= size
+            # otherwise, distribute particles evenly across legal positions
+            # by finding the greatest interval that can separate ghost positions
+            # ex. if 8 particles and 20 positions, pos_interval is 2
+            # and particles are assigned every 2 legal positions
+            else:
+                # make an even multiple of n
+                temp = size - (size % n)
+                # determine interval as int
+                pos_interval = temp / n
+
+                i = 0
+                # this loop ensures that we don't assign more than n particles
+                # and assigns a particle every few positions (acc. to interval)
+                while n > 0:
+                    self.particles += self.legalPositions[i]
+                    i = i + pos_interval
+                n = 0
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
@@ -669,7 +710,11 @@ class ParticleFilter(InferenceModule):
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        dist = DiscreteDistribution()
+        for p in self.particles:
+            dist[p] += 1
+        dist.normalize()
+        return dist
         "*** END YOUR CODE HERE ***"
     
     ########### ########### ###########
